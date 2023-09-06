@@ -20,6 +20,7 @@ func NewUserRepository() *UserRepository {
 	}
 
 	mongoClient, err := mongo.NewMongoDBClient(mongoConfig)
+
 	if err != nil {
 		panic(err) // Handle the error appropriately in your application
 	}
