@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func initializeRoutes(router *gin.Engine) {
+func InitializeRoutes(router *gin.Engine) {
 	// Create a new user
 	router.POST("/users", func(c *gin.Context) {
 		var newUser model.User
