@@ -10,21 +10,21 @@ import (
 func InitializeRoutes(router *gin.Engine) {
 	// Create a new user
 	router.POST("/users", func(c *gin.Context) {
-		var newUser model.User
-		if err := c.ShouldBindJSON(&newUser); err != nil {
+		var user model.User
+		if err := c.ShouldBindJSON(&user); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		// Insert the new user into MongoDB with the provided data
-		err := mongo.MongoDBClient.CreateUser(model.NewUser(newUser.UserName, newUser.PassWord, newUser.Email))
+		err := mongo.MongoDBClient.CreateUser(&user)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 			return
 		}
 
 		// Return a success response with the newly created user
-		c.JSON(http.StatusCreated, newUser)
+		c.JSON(http.StatusCreated, user)
 	})
 
 	// Add other routes for updating, deleting, listing users, etc.

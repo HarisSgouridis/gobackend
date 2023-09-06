@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	"fmt"
+	"github.com/HarisSgouridis/gobackend/model"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -56,7 +57,7 @@ func NewMongoDBClient(config MongoDBConfig) (*MongoDBClient, error) {
 }
 
 // CreateUser inserts a new user document into the MongoDB collection.
-func (m *MongoDBClient) CreateUser(user interface{}) error {
+func (m *MongoDBClient) CreateUser(user *model.User) error {
 	_, err := m.collection.InsertOne(context.Background(), user)
 	return err
 }

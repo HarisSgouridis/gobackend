@@ -8,9 +8,11 @@ import (
 func main() {
 
 	// Initialize routes
-	controller.InitializeRoutes(userRepo.Router)
 
 	r := gin.Default()
+
+	controller.InitializeRoutes(r)
+
 	r.GET("/", func(c *gin.Context) {
 		c.String(200, "Welcome to Go and Gin!")
 	})
