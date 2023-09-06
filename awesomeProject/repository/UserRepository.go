@@ -1,6 +1,7 @@
 package repository
 
 import (
+	_ "awesomeProject/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
