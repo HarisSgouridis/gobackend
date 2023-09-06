@@ -1,7 +1,7 @@
 package repository
 
 import (
-	_ "awesomeProject/model"
+	"github.com/HarisSgouridis/gobackend/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -12,22 +12,12 @@ type UserRepository struct {
 
 func NewUserRepository() *UserRepository {
 	repo := &UserRepository{}
-	repo.initializeRoutes()
 	return repo
-}
-
-func (repo *UserRepository) initializeRoutes() {
-	repo.router = gin.Default()
-
-	// Create a new user
-	repo.router.POST("/users", repo.createUser)
-
-	// Add other routes for updating, deleting, listing users, etc.
 }
 
 func (repo *UserRepository) createUser(c *gin.Context) {
 	// Parse the request and create a new user
-	var newUser User // Assuming you have a User struct defined
+	var newUser model.User // Assuming you have a User struct defined
 	if err := c.ShouldBindJSON(&newUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
