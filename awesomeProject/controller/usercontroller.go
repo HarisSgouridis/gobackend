@@ -81,8 +81,8 @@ func InitializeRoutes(router *gin.Engine) {
 		}
 
 		update := bson.M{"$set": bson.M{
-			"userName": user2.UserName,
-			"passWord": user2.PassWord,
+			"username": user2.UserName,
+			"password": user2.PassWord,
 			"email":    user2.Email,
 		}}
 
