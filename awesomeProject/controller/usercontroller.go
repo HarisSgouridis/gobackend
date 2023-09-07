@@ -93,4 +93,18 @@ func InitializeRoutes(router *gin.Engine) {
 		}
 
 	})
+
+	router.DELETE("/deleteUser", func(c *gin.Context) {
+
+		email := c.DefaultQuery("email", "")
+
+		filter := bson.M{"email": email}
+
+		err := client.DeleteUser(filter)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			return
+		}
+
+	})
 }
