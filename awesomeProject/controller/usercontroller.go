@@ -29,12 +29,12 @@ func InitializeRoutes(router *gin.Engine) {
 			return
 		}
 
-		defer func(client *mongo.MongoDBClient) {
-			err := client.Close()
-			if err != nil {
-				panic("Error disconnecting from MongoDB: " + err.Error())
-			}
-		}(client)
+		//defer func(client *mongo.MongoDBClient) {
+		//	err := client.Close()
+		//	if err != nil {
+		//		panic("Error disconnecting from MongoDB: " + err.Error())
+		//	}
+		//}(client)
 
 		// Insert the new user into MongoDB with the provided data
 		err = client.CreateUser(&user)
@@ -68,5 +68,29 @@ func InitializeRoutes(router *gin.Engine) {
 		c.JSON(http.StatusOK, user)
 	})
 
-	// Add other routes for updating, deleting, listing users, etc.
+	router.PUT("/updateUser", func(c *gin.Context) {
+
+		email := c.DefaultQuery("email", "")
+
+		filter := bson.M{"email": email}
+
+		var user2 model.User
+		if err := c.ShouldBindJSON(&user2); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		update := bson.M{"$set": bson.M{
+			"userName": user2.UserName,
+			"passWord": user2.PassWord,
+			"email":    user2.Email,
+		}}
+
+		err := client.UpdateUser(filter, update)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			return
+		}
+
+	})
 }
