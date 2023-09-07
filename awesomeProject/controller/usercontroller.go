@@ -6,11 +6,12 @@ import (
 	"github.com/HarisSgouridis/gobackend/mongo"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
 
 func InitializeRoutes(router *gin.Engine) {
-	client, err := mongo.NewMongoDBClient(mongo.MongoDBConfig{
+	client, _ := mongo.NewMongoDBClient(mongo.MongoDBConfig{
 		URI:      "mongodb+srv://Haris:Theoharis@db2mongo.ddnmcb9.mongodb.net/?retryWrites=true&w=majority",
 		Database: "bfs",
 	})
@@ -21,6 +22,12 @@ func InitializeRoutes(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+
+		password := []byte(user.PassWord)
+
+		hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+
+		user.PassWord = string(hashedPassword)
 
 		if err != nil {
 			// Handle the error, e.g., log it or return an error response
@@ -105,6 +112,8 @@ func InitializeRoutes(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err})
 			return
 		}
+
+		c.JSON(http.StatusAccepted, "User has succesfully been deleted")
 
 	})
 }
