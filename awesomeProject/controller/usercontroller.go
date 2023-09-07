@@ -5,11 +5,16 @@ import (
 	"github.com/HarisSgouridis/gobackend/model"
 	"github.com/HarisSgouridis/gobackend/mongo"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
 )
 
 func InitializeRoutes(router *gin.Engine) {
-	// Create a new user
+	client, err := mongo.NewMongoDBClient(mongo.MongoDBConfig{
+		URI:      "mongodb+srv://Haris:Theoharis@db2mongo.ddnmcb9.mongodb.net/?retryWrites=true&w=majority",
+		Database: "bfs",
+	})
+
 	router.POST("/users", func(c *gin.Context) {
 		var user model.User
 		if err := c.ShouldBindJSON(&user); err != nil {
@@ -17,10 +22,6 @@ func InitializeRoutes(router *gin.Engine) {
 			return
 		}
 
-		client, err := mongo.NewMongoDBClient(mongo.MongoDBConfig{
-			URI:      "mongodb+srv://Haris:Theoharis@db2mongo.ddnmcb9.mongodb.net/?retryWrites=true&w=majority",
-			Database: "bfs",
-		})
 		if err != nil {
 			// Handle the error, e.g., log it or return an error response
 			fmt.Println("Failed to create MongoDB client:", err)
@@ -44,6 +45,27 @@ func InitializeRoutes(router *gin.Engine) {
 
 		// Return a success response with the newly created user
 		c.JSON(http.StatusCreated, user)
+	})
+
+	router.GET("/getUser", func(c *gin.Context) {
+		email := c.DefaultQuery("email", "")
+
+		filter := bson.M{"email": email}
+
+		user, err := client.ReadUser(&filter)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// If the user is not found, return a custom error message
+		if user == nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
+		}
+
+		// Return the user data in the response
+		c.JSON(http.StatusOK, user)
 	})
 
 	// Add other routes for updating, deleting, listing users, etc.

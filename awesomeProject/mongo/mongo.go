@@ -63,7 +63,7 @@ func (m *MongoDBClient) CreateUser(user *model.User) error {
 }
 
 // ReadUser retrieves a user document from the MongoDB collection based on a query.
-func (m *MongoDBClient) ReadUser(filter bson.M) (interface{}, error) {
+func (m *MongoDBClient) ReadUser(filter *bson.M) (interface{}, error) {
 	var user interface{}
 	err := m.collection.FindOne(context.Background(), filter).Decode(&user)
 	return user, err
