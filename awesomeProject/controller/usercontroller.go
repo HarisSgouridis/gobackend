@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/HarisSgouridis/gobackend/model"
 	"github.com/HarisSgouridis/gobackend/mongo"
 	"github.com/gin-gonic/gin"
@@ -16,8 +17,26 @@ func InitializeRoutes(router *gin.Engine) {
 			return
 		}
 
+		client, err := mongo.NewMongoDBClient(mongo.MongoDBConfig{
+			URI:      "mongodb+srv://Haris:Theoharis@db2mongo.ddnmcb9.mongodb.net/?retryWrites=true&w=majority",
+			Database: "bfs",
+		})
+		if err != nil {
+			// Handle the error, e.g., log it or return an error response
+			fmt.Println("Failed to create MongoDB client:", err)
+			// You might want to return an error response to the client here.
+			return
+		}
+
+		defer func(client *mongo.MongoDBClient) {
+			err := client.Close()
+			if err != nil {
+				panic("Error disconnecting from MongoDB: " + err.Error())
+			}
+		}(client)
+
 		// Insert the new user into MongoDB with the provided data
-		err := mongo.MongoDBClient.CreateUser(&user)
+		err = client.CreateUser(&user)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 			return
